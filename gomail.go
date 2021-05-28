@@ -18,7 +18,7 @@ func main() {
 	receiver := sendCommand.String("r", "", "The email of the receiver")
 
 	if len(os.Args) == 1 {
-		fmt.Println("usage: gomail <command> [<args>]")
+		fmt.Println("Usage: gomail <command> [<args>]")
 		fmt.Println("The most commonly used gomail commands are: ")
 		fmt.Println("config Config gmail account")
 		fmt.Println("sendCommand Send an email")
