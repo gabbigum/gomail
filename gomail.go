@@ -85,7 +85,7 @@ func main() {
 func saveCredentials(load string, writer io.Writer) {
 	_, err := writer.Write([]byte(load))
 	if err != nil {
-		return
+		log.Fatalf("Could not write the data.")
 	}
 }
 
