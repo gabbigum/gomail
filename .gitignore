@@ -16,5 +16,7 @@
 # This is the executable that we generate
 gomail
 
+# This ignores the credential files
+*.txt
 # Dependency directories (remove the comment below to include it)
 # vendor/

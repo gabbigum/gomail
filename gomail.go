@@ -3,7 +3,10 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
+	"log"
 	"os"
+	"strings"
 )
 
 const (
@@ -15,7 +18,8 @@ Commands:
   send      Sends email
 
 Run 'gomail <command> -help' for more information on a command.`
-	)
+	credentialsFile = "credentials.txt"
+)
 
 func main() {
 	// config command and its subcommands
@@ -42,13 +46,15 @@ func main() {
 	default:
 		fmt.Printf("%q is not a valid command.\n", os.Args[1])
 		os.Exit(2)
-
 	}
 
 	// config happens here
 	if configCommand.Parsed() {
-		if *emailFlag == "" && *passFlag == ""{
+		if *emailFlag == "" && *passFlag == "" {
 			fmt.Println("Example usage of config:\n'gomail config -u your_email@gmail.com -p pass123'")
+		} else {
+			saveCredentials(*emailFlag, *passFlag)
+			fmt.Println("Configuration was successful.")
 		}
 	}
 
@@ -56,7 +62,35 @@ func main() {
 	if sendCommand.Parsed() {
 		if *textFile == "" && *receiver == "" {
 			fmt.Println("Example usage of send:\n'gomail send -f <file-name> -r <receiver-name>'")
-			os.Exit(0)
+		} else {
+			email, pass := readCredentials(credentialsFile)
+			// perform mail send
+			fmt.Println(email, pass)
+			// mail, password, file
+			sendMail(email, pass)
 		}
 	}
+}
+
+// should perform DI for writefile so the credentials can be written to anything - db/file/whatever
+func saveCredentials(email, pass string) {
+	load := []byte(email + "," + pass)
+	err := ioutil.WriteFile(credentialsFile, load, 0644)
+
+	if err != nil {
+		log.Fatalf("Couldn't write to file %s", credentialsFile)
+	}
+}
+
+func readCredentials(fileName string) (email, pass string) {
+	file, err := ioutil.ReadFile(fileName)
+	if err != nil {
+		log.Fatalf("Couldn't read from %s file", fileName)
+	}
+	tokens := strings.Split(string(file), ",")
+	return tokens[0], tokens[1]
+}
+
+func sendMail(email, pass string) {
+
 }
