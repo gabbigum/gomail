@@ -74,8 +74,6 @@ func main() {
 		} else {
 			email, pass := readCredentials(credentialsFile)
 			// perform mail send
-			fmt.Println(email, pass)
-			// mail, password, file
 			sendMail(email, pass)
 		}
 	}
