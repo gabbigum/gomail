@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -53,7 +54,15 @@ func main() {
 		if *emailFlag == "" && *passFlag == "" {
 			fmt.Println("Example usage of config:\n'gomail config -u your_email@gmail.com -p pass123'")
 		} else {
-			saveCredentials(*emailFlag, *passFlag)
+			// make them csv
+			load := *emailFlag + "," + *passFlag
+			f, err := os.OpenFile(credentialsFile, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+
+			if err != nil {
+				log.Fatalf("Error creating the %s file", credentialsFile)
+				os.Exit(1)
+			}
+			saveCredentials(load, f)
 			fmt.Println("Configuration was successful.")
 		}
 	}
@@ -72,13 +81,11 @@ func main() {
 	}
 }
 
-// should perform DI for writefile so the credentials can be written to anything - db/file/whatever
-func saveCredentials(email, pass string) {
-	load := []byte(email + "," + pass)
-	err := ioutil.WriteFile(credentialsFile, load, 0644)
-
+// Saves credentials to specified Writer
+func saveCredentials(load string, writer io.Writer) {
+	_, err := writer.Write([]byte(load))
 	if err != nil {
-		log.Fatalf("Couldn't write to file %s", credentialsFile)
+		return
 	}
 }
 
