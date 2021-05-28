@@ -6,22 +6,30 @@ import (
 	"os"
 )
 
+const (
+	usageMessage = `
+Usage: gomail <command> [<args>]
+
+Commands:  
+  config    Configures gmail account
+  send      Sends email
+
+Run 'gomail <command> -help' for more information on a command.`
+	)
+
 func main() {
 	// config command and its subcommands
 	configCommand := flag.NewFlagSet("config", flag.ExitOnError)
-	emailFlag := configCommand.String("u", "", "Gmail username e.g. 'my_account@gmail.com'")
-	passFlag := configCommand.String("p", "", "Gmail account password")
+	emailFlag := configCommand.String("u", "", "The gmail username\n'gomail config -u example@mail.com ...'")
+	passFlag := configCommand.String("p", "", "The gmail password\n'gomail config -p pass123'")
 
 	// sendCommand mail command and its subcommands
 	sendCommand := flag.NewFlagSet("send", flag.ExitOnError)
-	textFile := sendCommand.String("f", "", "File containing the email text.")
-	receiver := sendCommand.String("r", "", "The email of the receiver")
+	textFile := sendCommand.String("f", "", "File containing the text needed for the email.\n'gomail send -f <file_name> ...'")
+	receiver := sendCommand.String("r", "", "The receivers email\n'gomail send -r example@mail.com ...'")
 
 	if len(os.Args) == 1 {
-		fmt.Println("Usage: gomail <command> [<args>]")
-		fmt.Println("The most commonly used gomail commands are: ")
-		fmt.Println("config Config gmail account")
-		fmt.Println("sendCommand Send an email")
+		fmt.Println(usageMessage)
 		return
 	}
 
@@ -39,24 +47,16 @@ func main() {
 
 	// config happens here
 	if configCommand.Parsed() {
-		if *emailFlag == "" {
-			fmt.Println("Please provide your gmail account name.")
-		}
-
-		if *passFlag == "" {
-			fmt.Println("Please provide your gmail password.")
+		if *emailFlag == "" && *passFlag == ""{
+			fmt.Println("Example usage of config:\n'gomail config -u your_email@gmail.com -p pass123'")
 		}
 	}
 
 	// send mail happens here
 	if sendCommand.Parsed() {
-		if *textFile == "" {
-			fmt.Println("Please provide the file which is to be sent.")
-		}
-
-		// do validation if the receiver email is correct
-		if *receiver == "" {
-			fmt.Println("Please provide the receiver email.")
+		if *textFile == "" && *receiver == "" {
+			fmt.Println("Example usage of send:\n'gomail send -f <file-name> -r <receiver-name>'")
+			os.Exit(0)
 		}
 	}
 }
