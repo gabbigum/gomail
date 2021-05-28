@@ -9,13 +9,13 @@ import (
 func main() {
 	// config command and its subcommands
 	configCommand := flag.NewFlagSet("config", flag.ExitOnError)
-	emailFlag := configCommand.String("uname", "", "Gmail username e.g. 'my_account@gmail.com'")
-	passFlag := configCommand.String("pass", "", "Gmail account password")
+	emailFlag := configCommand.String("u", "", "Gmail username e.g. 'my_account@gmail.com'")
+	passFlag := configCommand.String("p", "", "Gmail account password")
 
 	// sendCommand mail command and its subcommands
 	sendCommand := flag.NewFlagSet("send", flag.ExitOnError)
-	textFile := sendCommand.String("file", "", "File containing the email text.")
-	receiver := sendCommand.String("rec", "", "The email of the receiver")
+	textFile := sendCommand.String("f", "", "File containing the email text.")
+	receiver := sendCommand.String("r", "", "The email of the receiver")
 
 	if len(os.Args) == 1 {
 		fmt.Println("usage: gomail <command> [<args>]")
