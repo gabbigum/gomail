@@ -88,6 +88,7 @@ func main() {
 	}
 }
 
+// Generates email message
 func generateMessage(from, to, subject string, body []byte) string {
 	header := make(map[string]string)
 	header["From"] = from
@@ -124,6 +125,7 @@ func readCredentials(fileName string) (email, pass string) {
 	return tokens[0], tokens[1]
 }
 
+// Sends email using smtp protocol
 func sendMail(username, pass, receiver, message string) {
 	auth := smtp.PlainAuth("", username, pass, host)
 	to := []string{
