@@ -1,6 +1,7 @@
 package main
 
 import (
+	"encoding/base64"
 	"flag"
 	"fmt"
 	"io"
@@ -85,12 +86,20 @@ func main() {
 
 			title := strings.Split(*textFile, ".")
 
-			email := Email{
-				Subject: title[0],
-				Content: readMail,
-			}
+			header := make(map[string]string)
+			header["From"] = username
+			header["To"] = *receiver
+			header["Subject"] = title[0]
+			header["MIME-Verssion"] = "1.0"
+			header["Content-Type"] = "text/plain; charset=\"utf-8\""
+			header["Content-Transfer-Encoding"] = "base64"
 
-			sendMail(username, pass, *receiver, email)
+			message := ""
+			for k, v := range header {
+				message += fmt.Sprintf("%s: %s\r\n", k, v)
+			}
+			message += "\r\n" + base64.StdEncoding.EncodeToString(readMail)
+			sendMail(username, pass, *receiver, message)
 		}
 	}
 }
@@ -113,16 +122,16 @@ func readCredentials(fileName string) (email, pass string) {
 	return tokens[0], tokens[1]
 }
 
-func sendMail(username, pass, receiver string, email Email) {
+func sendMail(username, pass, receiver, message string) {
 	auth := smtp.PlainAuth("", username, pass, host)
 	to := []string{
 		receiver,
 	}
 
-	err := smtp.SendMail(host + ":" + port, auth, username, to, email.Content)
+	err := smtp.SendMail(host + ":" + port, auth, username, to, []byte(message))
 
 	if err != nil {
-		log.Fatalf("Could not send email %v, err %v", email, err)
+		log.Fatalf("Could not send email %v, err %v", message, err)
 		return
 	}
 	fmt.Println("Email sent successfully.")
