@@ -6,6 +6,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	"net/smtp"
 	"os"
 	"strings"
 )
@@ -20,7 +21,14 @@ Commands:
 
 Run 'gomail <command> -help' for more information on a command.`
 	credentialsFile = "credentials.txt"
+	host = "smtp.gmail.com"
+	port = "587"
 )
+
+type Email struct {
+	Subject string
+	Content []byte
+}
 
 func main() {
 	// config command and its subcommands
@@ -72,9 +80,17 @@ func main() {
 		if *textFile == "" && *receiver == "" {
 			fmt.Println("Example usage of send:\n'gomail send -f <file-name> -r <receiver-name>'")
 		} else {
-			email, pass := readCredentials(credentialsFile)
-			// perform mail send
-			sendMail(email, pass)
+			username, pass := readCredentials(credentialsFile)
+			readMail, _ := ioutil.ReadFile(*textFile)
+
+			title := strings.Split(*textFile, ".")
+
+			email := Email{
+				Subject: title[0],
+				Content: readMail,
+			}
+
+			sendMail(username, pass, *receiver, email)
 		}
 	}
 }
@@ -87,6 +103,7 @@ func saveCredentials(load string, writer io.Writer) {
 	}
 }
 
+// reads credentials from config file
 func readCredentials(fileName string) (email, pass string) {
 	file, err := ioutil.ReadFile(fileName)
 	if err != nil {
@@ -96,6 +113,17 @@ func readCredentials(fileName string) (email, pass string) {
 	return tokens[0], tokens[1]
 }
 
-func sendMail(email, pass string) {
+func sendMail(username, pass, receiver string, email Email) {
+	auth := smtp.PlainAuth("", username, pass, host)
+	to := []string{
+		receiver,
+	}
 
+	err := smtp.SendMail(host + ":" + port, auth, username, to, email.Content)
+
+	if err != nil {
+		log.Fatalf("Could not send email %v, err %v", email, err)
+		return
+	}
+	fmt.Println("Email sent successfully.")
 }
