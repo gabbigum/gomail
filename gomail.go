@@ -56,7 +56,7 @@ func main() {
 	// config happens here
 	if configCommand.Parsed() {
 		if *emailFlag == "" && *passFlag == "" {
-			fmt.Println("Example usage of config:\n'gomail config -u your_email@gmail.com -p pass123'")
+			fmt.Println("Example usage of config:\n'gomail config -u <your-email@gmail.com> -p <your_password>'")
 		} else {
 			// make them csv
 			load := *emailFlag + "," + *passFlag
