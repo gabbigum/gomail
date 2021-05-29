@@ -26,11 +26,6 @@ Run 'gomail <command> -help' for more information on a command.`
 	port = "587"
 )
 
-type Email struct {
-	Subject string
-	Content []byte
-}
-
 func main() {
 	// config command and its subcommands
 	configCommand := flag.NewFlagSet("config", flag.ExitOnError)
@@ -86,22 +81,29 @@ func main() {
 
 			title := strings.Split(*textFile, ".")
 
-			header := make(map[string]string)
-			header["From"] = username
-			header["To"] = *receiver
-			header["Subject"] = title[0]
-			header["MIME-Verssion"] = "1.0"
-			header["Content-Type"] = "text/plain; charset=\"utf-8\""
-			header["Content-Transfer-Encoding"] = "base64"
+			message := generateMessage(username, *receiver, title[0], readMail)
 
-			message := ""
-			for k, v := range header {
-				message += fmt.Sprintf("%s: %s\r\n", k, v)
-			}
-			message += "\r\n" + base64.StdEncoding.EncodeToString(readMail)
 			sendMail(username, pass, *receiver, message)
 		}
 	}
+}
+
+func generateMessage(from, to, subject string, body []byte) string {
+	header := make(map[string]string)
+	header["From"] = from
+	header["To"] = to
+	header["Subject"] = subject
+	header["MIME-Verssion"] = "1.0"
+	header["Content-Type"] = "text/plain; charset=\"utf-8\""
+	header["Content-Transfer-Encoding"] = "base64"
+
+	message := ""
+	for k, v := range header {
+		message += fmt.Sprintf("%s: %s\r\n", k, v)
+	}
+	message += "\r\n" + base64.StdEncoding.EncodeToString(body)
+
+	return message
 }
 
 // Saves credentials to specified Writer
