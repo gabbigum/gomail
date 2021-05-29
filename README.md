@@ -2,7 +2,7 @@
 
 Gomail is simple CLI tool that allows you to send emails using your gmail account.
 
-### Usage
+## Usage
 
 1. Configure your email credentials with
 
@@ -11,3 +11,8 @@ Gomail is simple CLI tool that allows you to send emails using your gmail accoun
 2. Send mail with
 
 `gomail send -f <file-name> -r <receiver-name>`
+
+Note: Your file name will be the subject of the email.
+## Disclaimer
+
+You need to enable your 'use unsafe apps' gmail setting in order to use the tool. 
