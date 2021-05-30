@@ -9,7 +9,7 @@ Gomail is simple CLI tool that allows you to send emails using your gmail accoun
 `gomail config -u <your-email@gmail.com> -p <your_password>`
 
 2. Send mail with
-
+ 
 `gomail send -f <file-name> -r <receiver-name>`
 
 Note: Your file name will be the subject of the email.
